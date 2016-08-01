@@ -1,0 +1,12 @@
+Name: gpstime
+Version: 1.0.16
+Date: 2012-10-24
+Author: Jacques Beilin <jacques.beilin@ensg.eu>
+Maintainer: Jacques Beilin <jacques.beilin@ensg.eu>
+Title: GPS time and dates manipulation
+Description: Additional date manipulation tools.
+Categories: Time
+Depends: octave (>= 3.2.4)
+Autoload: yes
+License: GPL version 2 or later
+Url: http://octave.sf.net
