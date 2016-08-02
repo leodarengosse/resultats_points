@@ -8,18 +8,18 @@ clear all
 fichier_points = 'Points_mesures/Points.txt';
 fichier_points_connus ='Points_mesures/Points_connus.txt';
 
-numero_connu = 'A';
-numero_mesure = 'A2';
+numero_connu = 'B';
+numero_mesure = 'B1';
 
-%fichier_n = 'Rinex/igp0200k15.16n'; %10:00
+fichier_n = 'Rinex/igp0200k15.16n'; %10:00
 
 %fichier_o = 'Rinex/igp0200k05.16o'; %A 10:05
-%fichier_o = 'Rinex/igp0200k08.16o'; %B 10:08
+fichier_o = 'Rinex/igp0200k08.16o'; %B 10:08
 
 
-fichier_n = 'Rinex/igp0200o10.16n'; %14h00
+%fichier_n = 'Rinex/igp0200o10.16n'; %14h00
 
-fichier_o = 'Rinex/igp0200o08.16o'; %A 14:08
+%fichier_o = 'Rinex/igp0200o08.16o'; %A 14:08
 %fichier_o = 'Rinex/igp0200o10.16o'; %B 14:10
 
 
@@ -74,7 +74,8 @@ epoch = get_epoch_from_mjd(RNX_header,mjd);  %%récupération de l'époque correspo
 for i=1:1:5
     %Calcul des matrices pour les moindres carrés
     [CPR,H] = construc_mat(NAV_header,NAV_data,RNX_header,RNX_data,Point,mjd,epoch);  
-    dX=-(H'*H)^(-1)*H'*CPR; %solution des moindres carrés
+   
+    dX=-inv(H'*H)*H'*CPR; %solution des moindres carrés
     V = H*dX - CPR; %calcul du vecteur des résidus
     n = length(CPR);
     p = length(dX);
@@ -82,7 +83,7 @@ for i=1:1:5
     Point.X = Point.X + dX(1);
     Point.Y = Point.Y + dX(2);
     Point.Z = Point.Z + dX(3);
-
+    compare_points(Point, Point_connu)
 end
 
 %%
