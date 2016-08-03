@@ -1,0 +1,45 @@
+
+
+Je ne sais pas si j'arrive a travailler avec github, car je ne l'ai jamais fait. De toute façon, je vais essayer de vous expliquer ce que je pense. Si le système ne converge pas et tout le reste me semble bien programmé, (mes compliments d'abord) probablement le modèle mathématique n'est pas correct. Le modèle, (c'est à dire la solution des moindres carrés) je l'ai pris tout simplement de l'article que votre professeur a envoyé. Il même vous a dit qu'il n'avait pas réussi à l'implémenter. Donc, il est probablement incomplet.
+J'ai fait la déduction suivante:
+R-range
+PR- pseudorange
+CPR-corrections au pseudorange
+ 
+Pour chaque satellite i visé dès la tablette on a la rélation
+ 
+CPRi=Ri-PRi
+idéellement
+0=Ri-PRi-CPRi
+mais à cause des erreurs:
+v=Ri-PRi-CPRi
+v=Ri-(PRi+CPRi)
+v ce sont les résidus
+Alors, PRi on peut calculer , c'est la distance entre la position donnée par la tablette et le satellite. CPRi on la calcule pour la station de réference et on l'assume valide pour la position de la tablette aussi (la station de réference est à moins de 50 km). Après les avoir calculés, ce seront des números, pas de problème.
+Ri est une fonction non linéaire de X,Y,Z et on va profiter de ce fait. Il faut tout d'abord la linéariser selon le dévelopement de Taylor (1ere ordre):
+Ri=R0+(dR_dX)dX+(dR_dY)dY+(dR_dZ)dZ+.......
+R0 c'est un valeur approché de la distance qu'on peut calculer entre la position approchée et le satellite .
+ 
+C'est à dire que v:
+ 
+v=R0+(dR_dX)dX+(dR_dY)dY+(dR_dZ)dZ - (PRi-CPRi)   
+v=(dR_dX)dX+(dR_dY)dY+(dR_dZ)dZ-(PRi-CPRi-R0)
+v=HdX-B
+ 
+oú
+H=[dR_dX, dR_dY, dR_dZ]
+dX= [dX,dY,dZ]
+B=PRi-CPRi-R0
+dont R0 change à chaque itération. R0 =dist_cart(Point,Sat)
+ 
+La solution des moindres carrés sera maintenant:
+dX=inv(H'*H)*H'*B
+ 
+à chaque itération il faut recalculer H et B.
+ 
+Alors, dans votre programme:
+Il faut seulement inclure le calcul de R0 dans le code de construct_mat et changer run.m à la ligne de la solution des moindres carrés (75 ou 76).  Le signe moins n'existe pas dans mon modèle.  Je ne sais pas d'oú il vient. Pour la première itération, sauf pour le signe moins, les deux modèles sont equivalents, mais pas pour les itérations suivantes. J'éspere que ça change le comportement du système.
+ 
+J'éspere avoir expliqué suffisament pour que vous puissez travailler vous mêmes.
+Cordialement
+Paula

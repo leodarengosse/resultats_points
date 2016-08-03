@@ -43,6 +43,7 @@ Point_connu = get_data_point(Points_connus,numero_connu);
 
 [Result_init] = compare_points(Point, Point_connu)
 
+%%Stockage des coordonées approchée données par la tablette
 [Point.X_mes,Point.Y_mes,Point.Z_mes] = tool_geocart_GRS80(Point.Long,Point.Lat,Point.Alt);
 
 %%
@@ -73,11 +74,12 @@ epoch = get_epoch_from_mjd(RNX_header,mjd);  %%récupération de l'époque correspo
 
 for i=1:1:5
     %Calcul des matrices pour les moindres carrés
-    [CPR,H] = construc_mat(NAV_header,NAV_data,RNX_header,RNX_data,Point,mjd,epoch);  
+    [B,CPR,H] = construc_mat(NAV_header,NAV_data,RNX_header,RNX_data,Point,mjd,epoch)  
    
-    dX=-inv(H'*H)*H'*CPR; %solution des moindres carrés
-    V = H*dX - CPR; %calcul du vecteur des résidus
-    n = length(CPR);
+    dX=inv(H'*H)*H'*B; %solution des moindres carrés
+    
+    V = H*dX - B; %calcul du vecteur des résidus
+    n = length(B);
     p = length(dX);
     sigma_2 = (V'*V)/(n-p);%facteur unitaire de variance
     Point.X = Point.X + dX(1);
@@ -92,5 +94,5 @@ end
 
 %%
 % Affichage des résultats
-Result_init
-Result_fin = compare_points(Point, Point_connu)
+Result_init;
+Result_fin = compare_points(Point, Point_connu);
