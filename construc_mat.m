@@ -16,7 +16,8 @@ function [B,CPR,H] = construc_mat(NAV_header,NAV_data,RNX_header,RNX_data,Point,
             %calcul de la distance entre la station et le satellite
             Dist_Station_Sat = dist_cart(Sat, Station); 
             
-            Dist_Point_Sat = dist_cart(Point,Sat); 
+            %calcul de la distance entre le point et le satellite
+            Dist_Point_Sat = dist_cart(Point,Sat) 
             
             %création du vecteur des corrections (différence entre la
             %distance calculée entre le satellite et la station et la
@@ -25,9 +26,9 @@ function [B,CPR,H] = construc_mat(NAV_header,NAV_data,RNX_header,RNX_data,Point,
             CPR(i,1) = (Dist_Station_Sat-Sat.P_Dist); 
             
             %Construction de la matrice B PRi(fixe) - CPR - R0(change à chaque itération)
-            B(i,1) = Dist_Point_Sat_mes - CPR(i,1) - Dist_Point_Sat;
+            B(i,1) = Dist_Point_Sat_mes + CPR(i,1) - Dist_Point_Sat;
             
-            %création de la matrices des observations
+            %création de la matrice des observations
             [H(i,1),H(i,2),H(i,3)] = calc_deriv(Point,Sat); 
             
         end

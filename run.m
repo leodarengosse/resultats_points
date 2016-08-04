@@ -74,8 +74,8 @@ epoch = get_epoch_from_mjd(RNX_header,mjd);  %%récupération de l'époque correspo
 
 for i=1:1:5
     %Calcul des matrices pour les moindres carrés
-    [B,CPR,H] = construc_mat(NAV_header,NAV_data,RNX_header,RNX_data,Point,mjd,epoch)  
-   
+    [B,CPR,H] = construc_mat(NAV_header,NAV_data,RNX_header,RNX_data,Point,mjd,epoch);  
+    B
     dX=inv(H'*H)*H'*B; %solution des moindres carrés
     
     V = H*dX - B; %calcul du vecteur des résidus
@@ -85,7 +85,7 @@ for i=1:1:5
     Point.X = Point.X + dX(1);
     Point.Y = Point.Y + dX(2);
     Point.Z = Point.Z + dX(3);
-    compare_points(Point, Point_connu)
+    compare_points(Point, Point_connu); %%ca diverge
 end
 
 %%
