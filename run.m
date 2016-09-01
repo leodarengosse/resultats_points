@@ -8,13 +8,13 @@ clear all
 fichier_points = 'Points_mesures/Points.txt';
 fichier_points_connus ='Points_mesures/Points_connus.txt';
 
-numero_connu = 'B';
-numero_mesure = 'B1';
+numero_connu = 'A';
+numero_mesure = 'A1';
 
 fichier_n = 'Rinex/igp0200k15.16n'; %10:00
 
-%fichier_o = 'Rinex/igp0200k05.16o'; %A 10:05
-fichier_o = 'Rinex/igp0200k08.16o'; %B 10:08
+fichier_o = 'Rinex/igp0200k05.16o'; %A 10:05
+%fichier_o = 'Rinex/igp0200k08.16o'; %B 10:08
 
 
 %fichier_n = 'Rinex/igp0200o10.16n'; %14h00
@@ -64,7 +64,7 @@ t = Point.Time + lpsec; %%temps de la mesure utc en secondes convertit en temps 
 
 tpointgps = s1970_t(t); %création d'une structure gps time
 
-str = sprintf('%d:%d:%d',tpointgps.hh, tpointgps.min,tpointgps.sec) %affichage de la date pour vérifier
+str = sprintf('%d:%d:%d',tpointgps.hh, tpointgps.min,tpointgps.sec); %affichage de la date pour vérifier
 
 mjd = tpointgps.mjd;  %% récupération du jour julien
 epoch = get_epoch_from_mjd(RNX_header,mjd);  %%récupération de l'époque correspondante
@@ -72,21 +72,21 @@ epoch = get_epoch_from_mjd(RNX_header,mjd);  %%récupération de l'époque correspo
 %%
 %Estimation des nouvelles coodonnées par moindres carrés
 
-for i=1:1:5
-    %Calcul des matrices pour les moindres carrés
-    [B,CPR,H] = construc_mat(NAV_header,NAV_data,RNX_header,RNX_data,Point,mjd,epoch);  
-    B
-    dX=inv(H'*H)*H'*B; %solution des moindres carrés
-    
-    V = H*dX - B; %calcul du vecteur des résidus
-    n = length(B);
-    p = length(dX);
-    sigma_2 = (V'*V)/(n-p);%facteur unitaire de variance
-    Point.X = Point.X + dX(1);
-    Point.Y = Point.Y + dX(2);
-    Point.Z = Point.Z + dX(3);
-    compare_points(Point, Point_connu); %%ca diverge
-end
+
+%Calcul des matrices pour les moindres carrés
+[B,CPR,H,PosSat,PR,X0] = construc_mat(NAV_header,NAV_data,RNX_header,RNX_data,Point,mjd,epoch);  
+B;
+[X,Y,Z,cdtr,V,sigma02,Qxx] = interf_calc_LS_code_GPS(PosSat,PR,X0);
+dX=-inv(H'*H)*H'*CPR; %solution des moindres carrés
+
+V = H*dX - B; %calcul du vecteur des résidus
+n = length(B);
+p = length(dX);
+sigma_2 = (V'*V)/(n-p);%facteur unitaire de variance
+Point.X = Point.X + dX(1);
+Point.Y = Point.Y + dX(2);
+Point.Z = Point.Z + dX(3);
+compare_points(Point, Point_connu); %%ca diverge
 
 %%
 % Conversion en coordonnées géographiques
@@ -95,4 +95,4 @@ end
 %%
 % Affichage des résultats
 Result_init;
-Result_fin = compare_points(Point, Point_connu);
+Result_fin = compare_points(Point, Point_connu)
